@@ -170,70 +170,310 @@
       </div>
 
       <div class="content-scroll">
-        <section class="hero" id="hero">
-          <div class="hero-bg">
-            <div class="hero-bg-overlay"></div>
-            <div class="hero-bg-noise"></div>
-            <img class="hero-art" id="hero-art" alt="" />
-          </div>
-          <div class="hero-content">
-            <div class="hero-info">
-              <div class="hero-launcher-tag">
-                <span class="hero-launcher-dot"></span>
-                <span id="hero-tag">No featured game</span>
+        <div class="view view-home" data-view-pane="home">
+          <section class="hero" id="hero">
+            <div class="hero-bg">
+              <div class="hero-bg-overlay"></div>
+              <div class="hero-bg-noise"></div>
+              <img class="hero-art" id="hero-art" alt="" />
+            </div>
+            <div class="hero-content">
+              <div class="hero-info">
+                <div class="hero-launcher-tag">
+                  <span class="hero-launcher-dot"></span>
+                  <span id="hero-tag">No featured game</span>
+                </div>
+                <h1 class="hero-title" id="hero-title">Welcome to GameHub</h1>
+                <div class="hero-subtitle" id="hero-subtitle">Connect a launcher to populate your library</div>
+                <div class="hero-stats" id="hero-stats"></div>
+                <div class="hero-actions" id="hero-actions">
+                  <button class="btn btn-secondary" id="hero-sync-btn">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    Detect launchers
+                  </button>
+                </div>
               </div>
-              <h1 class="hero-title" id="hero-title">Welcome to GameHub</h1>
-              <div class="hero-subtitle" id="hero-subtitle">Connect a launcher to populate your library</div>
-              <div class="hero-stats" id="hero-stats"></div>
-              <div class="hero-actions" id="hero-actions">
-                <button class="btn btn-secondary" id="hero-sync-btn">
+              <div class="hero-side" id="hero-side"></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Recently Played</h2>
+                <p class="section-sub" id="recent-sub">Pick up where you left off</p>
+              </div>
+              <div class="section-actions">
+                <button class="chip chip-active" data-recent-filter="all">All</button>
+                <button class="chip" data-recent-filter="week">This Week</button>
+                <button class="chip" data-recent-filter="month">This Month</button>
+              </div>
+            </div>
+            <div class="carousel" id="recent-carousel">
+              <div class="empty-state">No recently played games yet.</div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">All Games</h2>
+                <p class="section-sub" id="all-sub">0 games across 0 launchers</p>
+              </div>
+              <div class="section-actions">
+                <button class="chip chip-active" data-filter="all">All</button>
+                <button class="chip" data-filter="installed">Installed</button>
+                <button class="chip" data-filter="favorites">Favorites</button>
+                <select class="select" id="sort-select">
+                  <option value="last_played">Sort: Last Played</option>
+                  <option value="name">Name (A-Z)</option>
+                  <option value="playtime">Playtime</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid" id="all-grid">
+              <div class="empty-state">No games yet. Open GameHub on a machine with launchers installed to populate your library.</div>
+            </div>
+          </section>
+        </div>
+
+        <div class="view view-downloads" data-view-pane="downloads" hidden>
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Downloads</h2>
+                <p class="section-sub" id="downloads-sub">No active downloads</p>
+              </div>
+              <div class="section-actions">
+                <button class="chip" id="downloads-clear-btn">Clear completed</button>
+              </div>
+            </div>
+            <div class="downloads-overview" id="downloads-overview">
+              <div class="overview-card">
+                <div class="overview-label">Active</div>
+                <div class="overview-value" data-dl-stat="active">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Queued</div>
+                <div class="overview-value" data-dl-stat="queued">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Speed</div>
+                <div class="overview-value" data-dl-stat="speed">0 B/s</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Remaining</div>
+                <div class="overview-value" data-dl-stat="remaining">0 B</div>
+              </div>
+            </div>
+            <div class="downloads-list" id="downloads-list">
+              <div class="empty-state">No downloads yet. Pick a not-installed game from your library to queue one.</div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Available to install</h2>
+                <p class="section-sub" id="downloads-available-sub">Cloud-only games detected from your launchers</p>
+              </div>
+            </div>
+            <div class="grid" id="downloads-available"></div>
+          </section>
+        </div>
+
+        <div class="view view-backups" data-view-pane="backups" hidden>
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Save Backups</h2>
+                <p class="section-sub" id="backups-sub">Your save backups are stored under data/backups/</p>
+              </div>
+              <div class="section-actions">
+                <button class="btn btn-primary" id="backups-run-all">
                   <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                  Detect launchers
+                  Run all backups
                 </button>
               </div>
             </div>
-            <div class="hero-side" id="hero-side"></div>
-          </div>
-        </section>
+            <div class="downloads-overview">
+              <div class="overview-card">
+                <div class="overview-label">Eligible</div>
+                <div class="overview-value" data-bk-stat="eligible">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Protected</div>
+                <div class="overview-value" data-bk-stat="protected">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Cloud size</div>
+                <div class="overview-value" data-bk-stat="size">0 B</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Last run</div>
+                <div class="overview-value" data-bk-stat="last">Never</div>
+              </div>
+            </div>
+          </section>
 
-        <section class="section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Recently Played</h2>
-              <p class="section-sub" id="recent-sub">Pick up where you left off</p>
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Per-game</h2>
+                <p class="section-sub">Configure save paths and backup individual games</p>
+              </div>
             </div>
-            <div class="section-actions">
-              <button class="chip chip-active" data-recent-filter="all">All</button>
-              <button class="chip" data-recent-filter="week">This Week</button>
-              <button class="chip" data-recent-filter="month">This Month</button>
+            <div class="backups-game-list" id="backups-game-list">
+              <div class="empty-state">No games yet.</div>
             </div>
-          </div>
-          <div class="carousel" id="recent-carousel">
-            <div class="empty-state">No recently played games yet.</div>
-          </div>
-        </section>
+          </section>
 
-        <section class="section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">All Games</h2>
-              <p class="section-sub" id="all-sub">0 games across 0 launchers</p>
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Backup history</h2>
+                <p class="section-sub" id="backups-history-sub">Last 50 entries</p>
+              </div>
             </div>
-            <div class="section-actions">
-              <button class="chip chip-active" data-filter="all">All</button>
-              <button class="chip" data-filter="installed">Installed</button>
-              <button class="chip" data-filter="favorites">Favorites</button>
-              <select class="select" id="sort-select">
-                <option value="last_played">Sort: Last Played</option>
-                <option value="name">Name (A-Z)</option>
-                <option value="playtime">Playtime</option>
-              </select>
+            <div class="backup-history" id="backup-history">
+              <div class="empty-state">No backups have run yet.</div>
             </div>
-          </div>
-          <div class="grid" id="all-grid">
-            <div class="empty-state">No games yet. Open GameHub on a machine with launchers installed to populate your library.</div>
-          </div>
-        </section>
+          </section>
+        </div>
+
+        <div class="view view-achievements" data-view-pane="achievements" hidden>
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Achievements</h2>
+                <p class="section-sub" id="achievements-sub">Synthesized from playtime milestones</p>
+              </div>
+              <div class="section-actions">
+                <span class="badge" id="achievements-total">0 / 0</span>
+              </div>
+            </div>
+            <div class="downloads-overview">
+              <div class="overview-card">
+                <div class="overview-label">Unlocked</div>
+                <div class="overview-value" data-ach-stat="unlocked">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Possible</div>
+                <div class="overview-value" data-ach-stat="possible">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Points</div>
+                <div class="overview-value" data-ach-stat="points">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Completed games</div>
+                <div class="overview-value" data-ach-stat="completed">0</div>
+              </div>
+            </div>
+            <div class="achievement-list" id="achievement-list">
+              <div class="empty-state">Play some games to start earning playtime milestones.</div>
+            </div>
+          </section>
+        </div>
+
+        <div class="view view-mods" data-view-pane="mods" hidden>
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Mods</h2>
+                <p class="section-sub" id="mods-sub">Detected mods across known mod folders</p>
+              </div>
+              <div class="section-actions">
+                <span class="badge" id="mods-total">0 mods</span>
+              </div>
+            </div>
+            <div class="downloads-overview">
+              <div class="overview-card">
+                <div class="overview-label">Games modded</div>
+                <div class="overview-value" data-mod-stat="games">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Total mods</div>
+                <div class="overview-value" data-mod-stat="total">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Enabled</div>
+                <div class="overview-value" data-mod-stat="enabled">0</div>
+              </div>
+              <div class="overview-card">
+                <div class="overview-label">Disk</div>
+                <div class="overview-value" data-mod-stat="size">0 B</div>
+              </div>
+            </div>
+            <div class="mods-list" id="mods-list">
+              <div class="empty-state">No mods detected. Mods are auto-detected for Skyrim SE, Stardew Valley, Cyberpunk 2077, BG3, Minecraft and more.</div>
+            </div>
+          </section>
+        </div>
+
+        <div class="view view-settings" data-view-pane="settings" hidden>
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2 class="section-title">Settings</h2>
+                <p class="section-sub">Configure how GameHub behaves on this machine</p>
+              </div>
+            </div>
+            <div class="settings-form" id="settings-form">
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <div class="setting-label">Cloud sync</div>
+                  <div class="setting-desc">Mirror save backups to the cloud panel</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" data-setting="cloud_sync" />
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <div class="setting-label">Auto backup interval</div>
+                  <div class="setting-desc">Minutes between automatic save backups</div>
+                </div>
+                <input type="number" min="5" max="720" class="setting-input" data-setting="auto_backup_minutes" />
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <div class="setting-label">Theme</div>
+                  <div class="setting-desc">Currently only dark mode is supported</div>
+                </div>
+                <select class="select setting-input" data-setting="theme">
+                  <option value="dark">Dark</option>
+                  <option value="auto">Auto</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <div class="setting-label">Launch on system start</div>
+                  <div class="setting-desc">Open GameHub when you log in</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" data-setting="autostart" />
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-meta">
+                  <div class="setting-label">Show notifications</div>
+                  <div class="setting-desc">Surface backups, downloads and achievements as toasts</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" data-setting="notifications" />
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="settings-actions">
+                <button class="btn btn-primary" id="settings-save">Save settings</button>
+                <span class="settings-status" id="settings-status"></span>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
     </main>
 

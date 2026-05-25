@@ -9,6 +9,7 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 
 from . import db, backups, stats, storage, activity, games as games_svc
+from . import downloads, achievements, mods
 from .launchers.manager import manager
 from .paths import ROOT
 
@@ -214,6 +215,170 @@ def set_backup_config(_h, _params, body):
         return 400, {"error": "game required"}
     backups.set_paths_for(game, paths)
     return 200, {"ok": True, "game": game, "paths": paths}
+
+
+# ---------- DOWNLOADS ----------
+
+@route("GET", "/api/downloads")
+def list_downloads(_h, _params, _body):
+    items = downloads.list_all()
+    return 200, {"items": items, "summary": downloads.queue_summary()}
+
+
+@route("POST", "/api/downloads")
+def create_download(_h, _params, body):
+    gid = body.get("game_id")
+    if not gid:
+        return 400, {"error": "game_id required"}
+    game = next((g for g in games_svc.all_games() if g.get("id") == gid), None)
+    if game is None:
+        return 404, {"error": "game not found"}
+    size = int(body.get("size_bytes") or game.get("size_bytes") or 0)
+    if size <= 0:
+        size = 12 * 1024 * 1024 * 1024  # default 12 GB for cloud-only games
+    entry = downloads.add(
+        game_id=gid,
+        name=game.get("name") or gid,
+        size_bytes=size,
+        launcher=game.get("launcher") or "",
+        cover_url=game.get("cover_url") or "",
+        speed_bps=int(body.get("speed_bps") or 0) or None,
+    )
+    activity.log(
+        kind="download",
+        title=f"Download queued: {entry['name']}",
+        subtitle=game.get("launcher") or "",
+        meta={"download_id": entry["id"], "game_id": gid},
+    )
+    return 200, entry
+
+
+@route("POST", r"/api/downloads/(?P<did>[^/]+)/pause")
+def pause_download(_h, params, _body):
+    return (200, {"ok": True}) if downloads.pause(params["_match"]["did"]) else (404, {"error": "not found"})
+
+
+@route("POST", r"/api/downloads/(?P<did>[^/]+)/resume")
+def resume_download(_h, params, _body):
+    return (200, {"ok": True}) if downloads.resume(params["_match"]["did"]) else (404, {"error": "not found"})
+
+
+@route("DELETE", r"/api/downloads/(?P<did>[^/]+)")
+def cancel_download(_h, params, _body):
+    return (200, {"ok": True}) if downloads.cancel(params["_match"]["did"]) else (404, {"error": "not found"})
+
+
+@route("POST", "/api/downloads/clear")
+def clear_downloads(_h, _params, _body):
+    removed = downloads.clear_completed()
+    return 200, {"removed": removed}
+
+
+# ---------- ACHIEVEMENTS ----------
+
+@route("GET", "/api/achievements")
+def list_achievements(_h, _params, _body):
+    return 200, achievements.summary(games_svc.all_games())
+
+
+@route("GET", r"/api/achievements/(?P<gid>[^/]+)")
+def game_achievements(_h, params, _body):
+    gid = params["_match"]["gid"]
+    game = next((g for g in games_svc.all_games() if g.get("id") == gid), None)
+    if game is None:
+        return 404, {"error": "game not found"}
+    return 200, achievements.for_game(game)
+
+
+@route("POST", r"/api/achievements/(?P<gid>[^/]+)/unlock")
+def unlock_achievement(_h, params, body):
+    gid = params["_match"]["gid"]
+    aid = body.get("achievement_id")
+    if not aid:
+        return 400, {"error": "achievement_id required"}
+    game = next((g for g in games_svc.all_games() if g.get("id") == gid), None)
+    achievements.unlock(
+        gid, aid,
+        name=body.get("name") or "",
+        description=body.get("description") or "",
+        points=int(body.get("points") or 10),
+    )
+    if game:
+        activity.log(
+            kind="achievement",
+            title=f"Achievement unlocked in {game.get('name')}",
+            subtitle=body.get("name") or aid,
+            meta={"game_id": gid, "achievement_id": aid},
+        )
+    return 200, {"ok": True}
+
+
+@route("POST", r"/api/achievements/(?P<gid>[^/]+)/lock")
+def lock_achievement(_h, params, body):
+    gid = params["_match"]["gid"]
+    aid = body.get("achievement_id")
+    if not aid:
+        return 400, {"error": "achievement_id required"}
+    achievements.lock(gid, aid)
+    return 200, {"ok": True}
+
+
+# ---------- MODS ----------
+
+@route("GET", "/api/mods")
+def list_all_mods(_h, _params, _body):
+    return 200, mods.summary(games_svc.all_games())
+
+
+@route("GET", r"/api/mods/(?P<gid>[^/]+)")
+def mods_for_game(_h, params, _body):
+    gid = params["_match"]["gid"]
+    game = next((g for g in games_svc.all_games() if g.get("id") == gid), None)
+    if game is None:
+        return 404, {"error": "game not found"}
+    return 200, mods.list_for_game(game.get("name") or "")
+
+
+@route("POST", r"/api/mods/(?P<gid>[^/]+)/toggle")
+def toggle_mod(_h, params, body):
+    gid = params["_match"]["gid"]
+    mod_id = body.get("mod_id")
+    enabled = bool(body.get("enabled"))
+    if not mod_id:
+        return 400, {"error": "mod_id required"}
+    game = next((g for g in games_svc.all_games() if g.get("id") == gid), None)
+    if game is None:
+        return 404, {"error": "game not found"}
+    result = mods.set_enabled(game.get("name") or "", mod_id, enabled)
+    if result.get("ok"):
+        activity.log(
+            kind="mod",
+            title=f"Mod {'enabled' if enabled else 'disabled'}: {result.get('mod')}",
+            subtitle=game.get("name") or "",
+            meta={"game_id": gid, "mod_id": mod_id, "enabled": enabled},
+        )
+    return (200 if result.get("ok") else 400), result
+
+
+@route("POST", r"/api/mods/(?P<gid>[^/]+)/dirs")
+def set_mod_dirs(_h, params, body):
+    gid = params["_match"]["gid"]
+    dirs = body.get("dirs") or []
+    game = next((g for g in games_svc.all_games() if g.get("id") == gid), None)
+    if game is None:
+        return 404, {"error": "game not found"}
+    mods.set_dirs_for(game.get("name") or "", dirs)
+    return 200, {"ok": True, "dirs": dirs}
+
+
+# ---------- NOTIFICATIONS ----------
+
+@route("GET", "/api/notifications")
+def notifications(_h, params, _body):
+    since = int((params.get("since") or ["0"])[0])
+    items = activity.recent(limit=50)
+    unseen = [a for a in items if int(a.get("ts") or 0) > since]
+    return 200, {"unseen": len(unseen), "items": unseen[:10], "latest_ts": items[0]["ts"] if items else 0}
 
 
 # ---------- HTTP HANDLER ----------

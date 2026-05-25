@@ -9,6 +9,14 @@
     stats: null,
     storage: null,
     backupStatus: null,
+    backupHistory: [],
+    downloads: { items: [], summary: null },
+    achievements: null,
+    mods: null,
+    settings: null,
+    notifications: { unseen: 0, latest_ts: 0 },
+    seenActivityTs: 0,
+    view: 'home',
     filter: 'all',
     sort: 'last_played',
     recentFilter: 'all',
@@ -98,6 +106,14 @@
     }, 3500);
   }
 
+  function genGradient(name) {
+    let h = 0;
+    for (let i = 0; i < (name || '').length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    const h1 = h % 360;
+    const h2 = (h1 + 60 + (h >> 8) % 90) % 360;
+    return `linear-gradient(135deg, hsl(${h1} 60% 22%), hsl(${h2} 50% 10%))`;
+  }
+
   // ---------- renderers ----------
   function renderLaunchers() {
     const host = $('#launchers-list');
@@ -120,19 +136,15 @@
     }).join('');
   }
 
-  function gameCover(game, gradientFallback) {
+  function gameCover(game) {
     if (game.cover_url) {
       return `<img src="${escapeHTML(game.cover_url)}" alt="${escapeHTML(game.name)}" loading="lazy" onerror="this.style.display='none'"/>`;
     }
     return '';
   }
 
-  function genGradient(name) {
-    let h = 0;
-    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-    const h1 = h % 360;
-    const h2 = (h1 + 60 + (h >> 8) % 90) % 360;
-    return `linear-gradient(135deg, hsl(${h1} 60% 22%), hsl(${h2} 50% 10%))`;
+  function launcherName(id) {
+    return (state.launchers.find(l => l.id === id) || {}).name || id || '';
   }
 
   function renderRecent() {
@@ -145,7 +157,6 @@
     }
     host.innerHTML = items.map(g => {
       const meta = LAUNCHER_META[g.launcher] || {};
-      const launcherName = (state.launchers.find(l => l.id === g.launcher) || {}).name || g.launcher;
       const progressPct = Math.min(100, Math.max(0, Math.round((g.playtime_minutes || 0) / 200 * 100)));
       return `
         <article class="card card-tall" data-game-id="${escapeHTML(g.id)}">
@@ -155,7 +166,7 @@
             <button class="card-fav ${g.favorite ? 'active' : ''}" data-fav="${escapeHTML(g.id)}" title="Favorite">
               <svg viewBox="0 0 24 24" fill="${g.favorite ? 'currentColor' : 'none'}"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.7"/></svg>
             </button>
-            <div class="card-launcher launcher-pill ${meta.pill || ''}">${escapeHTML(launcherName)}</div>
+            <div class="card-launcher launcher-pill ${meta.pill || ''}">${escapeHTML(launcherName(g.launcher))}</div>
             <button class="card-play" data-launch="${escapeHTML(g.id)}" title="Launch">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg>
             </button>
@@ -191,12 +202,11 @@
     }
     host.innerHTML = items.map(g => {
       const meta = LAUNCHER_META[g.launcher] || {};
-      const launcherName = (state.launchers.find(l => l.id === g.launcher) || {}).name || g.launcher;
       return `
         <article class="card-sm" data-game-id="${escapeHTML(g.id)}">
           <div class="card-sm-art" style="background:${genGradient(g.name)}">
             ${gameCover(g)}
-            <span class="card-sm-launcher launcher-pill ${meta.pill || ''}">${escapeHTML(launcherName)}</span>
+            <span class="card-sm-launcher launcher-pill ${meta.pill || ''}">${escapeHTML(launcherName(g.launcher))}</span>
             <span class="card-sm-installed" title="${g.installed ? 'Installed' : 'Cloud'}" style="color:${g.installed ? '#34D399' : '#a3a5b8'}">${g.installed ? '●' : '○'}</span>
           </div>
           <div class="card-sm-info">
@@ -239,8 +249,7 @@
         art.style.display = 'none';
       }
     }
-    const launcherName = (state.launchers.find(l => l.id === featured.launcher) || {}).name || featured.launcher;
-    if (tag) tag.textContent = `${launcherName} · ${featured.installed ? 'Continue Playing' : 'Cloud'}`;
+    if (tag) tag.textContent = `${launcherName(featured.launcher)} · ${featured.installed ? 'Continue Playing' : 'Cloud'}`;
     if (title) title.textContent = featured.name;
     if (subtitle) subtitle.textContent = featured.installed ? (featured.install_dir || 'Installed') : 'Not installed';
 
@@ -274,7 +283,7 @@
     if (side) {
       side.innerHTML = `
         <div class="hero-tags">
-          <span class="tag">${escapeHTML(launcherName)}</span>
+          <span class="tag">${escapeHTML(launcherName(featured.launcher))}</span>
           ${featured.installed ? `<span class="tag">${fmtBytes(featured.size_bytes)}</span>` : ''}
           ${featured.favorite ? '<span class="tag">Favorite</span>' : ''}
         </div>`;
@@ -293,6 +302,8 @@
       launch_failed: {cls: 'activity-ic-achievement', svg: '<path d="M12 8v5M12 16h.01M3 21h18L12 3 3 21z" stroke="currentColor" stroke-width="1.7" fill="none"/>'},
       backup: {cls: 'activity-ic-backup', svg: '<path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M18 3v4h-4M6 21v-4h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/>'},
       backup_failed: {cls: 'activity-ic-achievement', svg: '<path d="M12 8v5M12 16h.01M3 21h18L12 3 3 21z" stroke="currentColor" stroke-width="1.7" fill="none"/>'},
+      download: {cls: 'activity-ic-launch', svg: '<path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/>'},
+      mod: {cls: 'activity-ic-friend', svg: '<path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/>'},
       friend: {cls: 'activity-ic-friend', svg: '<circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/>'},
       achievement: {cls: 'activity-ic-achievement', svg: '<path d="M8 21h8M12 17v4M5 4h14l-1 11a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3L5 4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" fill="none"/>'},
     };
@@ -348,15 +359,16 @@
   function renderBackup() {
     const b = state.backupStatus;
     if (!b) return;
-    $('#backup-percent').textContent = `${b.percent}%`;
+    const setVal = (sel, val) => { const el = $(sel); if (el) el.textContent = val; };
+    setVal('#backup-percent', `${b.percent}%`);
     const circle = $('#backup-ring-circle');
     if (circle) {
       const off = 314 - (314 * b.percent / 100);
       circle.style.strokeDashoffset = off;
     }
-    $('#backup-last').textContent = fmtRelative(b.last_run_ts);
-    $('#backup-protected').textContent = `${b.protected_count} / ${b.eligible_count}`;
-    $('#backup-size').textContent = fmtBytes(b.cloud_size_bytes);
+    setVal('#backup-last', fmtRelative(b.last_run_ts));
+    setVal('#backup-protected', `${b.protected_count} / ${b.eligible_count}`);
+    setVal('#backup-size', fmtBytes(b.cloud_size_bytes));
     const badge = $('#backup-health');
     if (badge) {
       const labels = { good: 'Healthy', warn: 'Needs attention', bad: 'Action needed' };
@@ -406,6 +418,238 @@
     if (cloud) cloud.style.display = s.cloud_synced ? '' : 'none';
   }
 
+  // ---------- view-specific renderers ----------
+  function renderDownloads() {
+    const summary = state.downloads.summary || {};
+    const items = state.downloads.items || [];
+    const set = (sel, v) => { const el = $(sel); if (el) el.textContent = v; };
+    set('[data-dl-stat="active"]', summary.active || 0);
+    set('[data-dl-stat="queued"]', summary.queued || 0);
+    set('[data-dl-stat="speed"]', `${fmtBytes(summary.current_speed_bps || 0)}/s`);
+    set('[data-dl-stat="remaining"]', fmtBytes(summary.remaining_bytes || 0));
+    set('#downloads-sub', items.length
+      ? `${summary.active} active · ${summary.queued} queued · ${summary.completed} completed`
+      : 'No downloads queued');
+
+    const host = $('#downloads-list');
+    if (host) {
+      if (!items.length) {
+        host.innerHTML = '<div class="empty-state">No downloads yet. Pick a not-installed game from your library to queue one.</div>';
+      } else {
+        host.innerHTML = items.map(d => {
+          const pct = d.size_bytes ? Math.min(100, Math.round(d.downloaded_bytes / d.size_bytes * 100)) : 0;
+          const subParts = [];
+          subParts.push(`${fmtBytes(d.downloaded_bytes)} / ${fmtBytes(d.size_bytes)}`);
+          subParts.push(`${pct}%`);
+          if (d.status === 'downloading') subParts.push(`${fmtBytes(d.speed_bps)}/s`);
+          if (d.launcher) subParts.push(launcherName(d.launcher));
+          const actions = [];
+          if (d.status === 'downloading' || d.status === 'queued') {
+            actions.push(`<button class="download-action-btn" data-dl-pause="${escapeHTML(d.id)}" title="Pause"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>`);
+          }
+          if (d.status === 'paused') {
+            actions.push(`<button class="download-action-btn" data-dl-resume="${escapeHTML(d.id)}" title="Resume"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg></button>`);
+          }
+          actions.push(`<button class="download-action-btn" data-dl-cancel="${escapeHTML(d.id)}" title="Cancel"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>`);
+          return `
+            <div class="download-row">
+              <div class="download-art" style="background:${genGradient(d.name)}">${d.cover_url ? `<img src="${escapeHTML(d.cover_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:9px;" onerror="this.style.display='none'"/>` : ''}</div>
+              <div class="download-meta">
+                <div class="download-title">${escapeHTML(d.name)}</div>
+                <div class="download-sub">${subParts.map(p => `<span>${escapeHTML(p)}</span>`).join('')}</div>
+                <div class="download-progress"><div class="download-progress-fill" style="width:${pct}%"></div></div>
+              </div>
+              <span class="download-status ${d.status}">${d.status}</span>
+              <div class="download-actions">${actions.join('')}</div>
+            </div>`;
+        }).join('');
+      }
+    }
+
+    const available = $('#downloads-available');
+    if (available) {
+      const cloudOnly = state.games.filter(g => !g.installed);
+      const queuedIds = new Set(items.filter(d => d.status !== 'completed').map(d => d.game_id));
+      const candidates = cloudOnly.filter(g => !queuedIds.has(g.id)).slice(0, 24);
+      if (!candidates.length) {
+        available.innerHTML = '<div class="empty-state">All games are installed or queued.</div>';
+      } else {
+        available.innerHTML = candidates.map(g => {
+          const meta = LAUNCHER_META[g.launcher] || {};
+          return `
+            <article class="card-sm" data-game-id="${escapeHTML(g.id)}">
+              <div class="card-sm-art" style="background:${genGradient(g.name)}">
+                ${gameCover(g)}
+                <span class="card-sm-launcher launcher-pill ${meta.pill || ''}">${escapeHTML(launcherName(g.launcher))}</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">${escapeHTML(g.name)}</div>
+                <div class="card-sm-meta">Not installed · ${fmtBytes(g.size_bytes || 12 * 1024 ** 3)}</div>
+                <button class="btn btn-primary" style="margin-top:8px; width:100%;" data-download="${escapeHTML(g.id)}">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span>Install</span>
+                </button>
+              </div>
+            </article>`;
+        }).join('');
+      }
+    }
+  }
+
+  function renderBackupsView() {
+    const b = state.backupStatus || {};
+    const set = (sel, v) => { const el = $(sel); if (el) el.textContent = v; };
+    set('[data-bk-stat="eligible"]', b.eligible_count || 0);
+    set('[data-bk-stat="protected"]', b.protected_count || 0);
+    set('[data-bk-stat="size"]', fmtBytes(b.cloud_size_bytes || 0));
+    set('[data-bk-stat="last"]', fmtRelative(b.last_run_ts));
+
+    const lastByGame = new Map();
+    (state.backupHistory || []).forEach(h => {
+      if (!lastByGame.has(h.game)) lastByGame.set(h.game, h);
+    });
+
+    const gameHost = $('#backups-game-list');
+    if (gameHost) {
+      const games = state.games.slice().sort((a, b) => a.name.localeCompare(b.name));
+      if (!games.length) {
+        gameHost.innerHTML = '<div class="empty-state">No games yet.</div>';
+      } else {
+        gameHost.innerHTML = games.map(g => {
+          const last = lastByGame.get(g.name);
+          const status = last ? 'protected' : (g.installed ? 'eligible' : 'skipped');
+          const statusLabel = status === 'protected' ? `Protected · ${fmtRelative(last.ts)}` : status === 'eligible' ? 'Has save hints' : 'Not installed';
+          return `
+            <div class="backup-game-row">
+              <div class="backup-game-info">
+                <div class="backup-game-title">${escapeHTML(g.name)}</div>
+                <div class="backup-game-paths">
+                  <span>${escapeHTML(launcherName(g.launcher))}${last ? ` · ${fmtBytes(last.size_bytes)}` : ''}</span>
+                </div>
+              </div>
+              <div class="backup-game-actions">
+                <span class="backup-game-status ${status}">${escapeHTML(statusLabel)}</span>
+                <button class="download-action-btn" data-backup-game="${escapeHTML(g.name)}" title="Backup now">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+            </div>`;
+        }).join('');
+      }
+    }
+
+    const histHost = $('#backup-history');
+    if (histHost) {
+      if (!state.backupHistory.length) {
+        histHost.innerHTML = '<div class="empty-state">No backups have run yet.</div>';
+      } else {
+        histHost.innerHTML = state.backupHistory.map(h => `
+          <div class="history-row">
+            <div>
+              <div class="history-title">${escapeHTML(h.game)}</div>
+              <div class="history-sub">${escapeHTML(h.file)} · ${h.file_count} file${h.file_count === 1 ? '' : 's'}</div>
+            </div>
+            <span class="history-size">${fmtBytes(h.size_bytes)}</span>
+            <span class="history-time">${fmtRelative(h.ts)}</span>
+          </div>`).join('');
+      }
+      const sub = $('#backups-history-sub');
+      if (sub) sub.textContent = `${state.backupHistory.length} entries`;
+    }
+  }
+
+  function renderAchievementsView() {
+    const a = state.achievements;
+    if (!a) return;
+    const set = (sel, v) => { const el = $(sel); if (el) el.textContent = v; };
+    set('[data-ach-stat="unlocked"]', a.total_unlocked);
+    set('[data-ach-stat="possible"]', a.total_possible);
+    set('[data-ach-stat="points"]', a.total_points);
+    set('[data-ach-stat="completed"]', a.completed_games);
+    set('#achievements-total', `${a.total_unlocked} / ${a.total_possible}`);
+    set('#achievements-sub', `${a.tracked_games} games tracked · ${a.overall_percent}% complete`);
+
+    const host = $('#achievement-list');
+    if (!host) return;
+    if (!a.games.length) {
+      host.innerHTML = '<div class="empty-state">Play some games to start earning playtime milestones.</div>';
+      return;
+    }
+    host.innerHTML = a.games.map(g => `
+      <div class="ach-game-row" data-ach-game="${escapeHTML(g.game_id)}">
+        <div class="ach-game-head">
+          <div>
+            <div class="ach-game-title">${escapeHTML(g.name)}</div>
+            <div class="ach-game-sub">${escapeHTML(launcherName(g.launcher))} · ${g.unlocked_count} / ${g.total_count} unlocked · ${g.points} pts</div>
+          </div>
+          <span class="badge ${g.completion_percent >= 100 ? 'badge-good' : ''}">${g.completion_percent}%</span>
+        </div>
+        <div class="ach-progress-bar"><div class="ach-progress-fill" style="width:${g.completion_percent}%"></div></div>
+        <div class="ach-items">
+          ${g.items.map(it => `
+            <div class="ach-item ${it.unlocked ? 'unlocked' : 'locked'}">
+              <div class="ach-icon">
+                <svg viewBox="0 0 24 24" fill="${it.unlocked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.7">
+                  <path d="M8 21h8M12 17v4M5 4h14l-1 11a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3L5 4z" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="ach-info">
+                <div class="ach-name">${escapeHTML(it.name)}</div>
+                <div class="ach-desc">${escapeHTML(it.description)}</div>
+                <div class="ach-points">${it.points} pts${it.unlocked ? ' · ' + fmtRelative(it.unlocked_ts) : ''}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  function renderModsView() {
+    const m = state.mods;
+    const set = (sel, v) => { const el = $(sel); if (el) el.textContent = v; };
+    set('[data-mod-stat="games"]', m ? m.games_with_mods : 0);
+    set('[data-mod-stat="total"]', m ? m.total_mods : 0);
+    set('[data-mod-stat="enabled"]', m ? m.total_enabled : 0);
+    set('[data-mod-stat="size"]', fmtBytes(m ? m.total_size_bytes : 0));
+    set('#mods-total', `${m ? m.total_mods : 0} mod${(m && m.total_mods === 1) ? '' : 's'}`);
+    set('#mods-sub', m && m.games_with_mods
+      ? `${m.games_with_mods} game${m.games_with_mods === 1 ? '' : 's'} with mods`
+      : 'No mods detected. Default folders are scanned for known modding-friendly games.');
+
+    const host = $('#mods-list');
+    if (!host) return;
+    if (!m || !m.games.length) {
+      host.innerHTML = '<div class="empty-state">No mods detected. Mods are auto-detected for Skyrim SE, Stardew Valley, Cyberpunk 2077, BG3, Minecraft and more.</div>';
+      return;
+    }
+    host.innerHTML = m.games.map(g => `
+      <div class="mod-game-row" data-mod-game-row="${escapeHTML(g.game_id)}">
+        <div class="mod-game-head">
+          <div>
+            <div class="mod-game-title">${escapeHTML(g.name)}</div>
+            <div class="mod-game-sub">${escapeHTML(launcherName(g.launcher))} · ${g.enabled_count} / ${g.count} enabled · ${fmtBytes(g.size_bytes)}</div>
+          </div>
+          <button class="ach-game-action-btn" data-mod-expand="${escapeHTML(g.game_id)}">Manage</button>
+        </div>
+        <div class="mod-roots">${g.roots.map(r => `<span>${escapeHTML(r)}</span>`).join('')}</div>
+        <div class="mod-items" data-mod-items="${escapeHTML(g.game_id)}" hidden></div>
+      </div>`).join('');
+  }
+
+  async function renderSettingsView() {
+    let cfg = state.settings;
+    if (!cfg) {
+      try { cfg = await api('/settings'); state.settings = cfg; }
+      catch (e) { return; }
+    }
+    $$('[data-setting]').forEach(el => {
+      const key = el.dataset.setting;
+      const val = cfg[key];
+      if (el.type === 'checkbox') el.checked = !!val;
+      else if (el.type === 'number') el.value = val == null ? '' : val;
+      else el.value = val == null ? '' : String(val);
+    });
+  }
+
   // ---------- filtering ----------
   function filteredRecent() {
     const now = Date.now() / 1000;
@@ -420,20 +664,57 @@
     let arr = state.games.slice();
     if (state.filter === 'installed') arr = arr.filter(g => g.installed);
     if (state.filter === 'favorites') arr = arr.filter(g => g.favorite);
+    if (state.filter === 'recent') arr = arr.filter(g => g.last_played_ts);
     if (state.search) {
       const q = state.search.toLowerCase();
       arr = arr.filter(g => g.name.toLowerCase().includes(q));
     }
-    if (state.sort === 'name') arr.sort((a, b) => a.name.localeCompare(b.name));
-    else if (state.sort === 'playtime') arr.sort((a, b) => (b.playtime_minutes || 0) - (a.playtime_minutes || 0));
-    else arr.sort((a, b) => (b.last_played_ts || 0) - (a.last_played_ts || 0));
+    if (state.filter === 'recent' || state.sort === 'last_played') {
+      arr.sort((a, b) => (b.last_played_ts || 0) - (a.last_played_ts || 0));
+    } else if (state.sort === 'name') {
+      arr.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (state.sort === 'playtime') {
+      arr.sort((a, b) => (b.playtime_minutes || 0) - (a.playtime_minutes || 0));
+    }
     return arr;
+  }
+
+  // ---------- view switching ----------
+  function setView(view) {
+    state.view = view;
+    const reusesHome = ['home', 'library', 'installed', 'favorites', 'recent'];
+    const activePane = reusesHome.includes(view) ? 'home' : view;
+    $$('.view').forEach(v => { v.hidden = v.dataset.viewPane !== activePane; });
+    $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+
+    if (view === 'home') { state.filter = 'all'; }
+    else if (view === 'library') { state.filter = 'all'; }
+    else if (view === 'installed') { state.filter = 'installed'; }
+    else if (view === 'favorites') { state.filter = 'favorites'; }
+    else if (view === 'recent') { state.filter = 'recent'; }
+    $$('[data-filter]').forEach(c => c.classList.toggle('chip-active', c.dataset.filter === state.filter));
+
+    if (reusesHome.includes(view)) {
+      renderAllGames();
+      renderRecent();
+      renderHero();
+    } else if (view === 'downloads') {
+      loadDownloads().then(renderDownloads);
+    } else if (view === 'backups') {
+      loadBackupHistory().then(renderBackupsView);
+    } else if (view === 'achievements') {
+      loadAchievements().then(renderAchievementsView);
+    } else if (view === 'mods') {
+      loadMods().then(renderModsView);
+    } else if (view === 'settings') {
+      renderSettingsView();
+    }
   }
 
   // ---------- data loaders ----------
   async function loadAll() {
     try {
-      const [h, launchers, games, stats, storage, backupStatus, activity] = await Promise.all([
+      const [h, launchers, games, stats, storage, backupStatus, activity, notif] = await Promise.all([
         api('/health'),
         api('/launchers'),
         api('/games'),
@@ -441,6 +722,7 @@
         api('/storage'),
         api('/backups/status'),
         api('/activity'),
+        api('/notifications'),
       ]);
       $('#server-status').textContent = `Online · ${h.service} v${h.version}`;
       $('#server-dot').style.background = 'var(--good)';
@@ -450,12 +732,37 @@
       state.storage = storage;
       state.backupStatus = backupStatus;
       state.activity = activity.items;
+      state.notifications = notif;
+      updateNotificationsDot();
       renderAll();
     } catch (e) {
       $('#server-status').textContent = 'Backend offline';
       $('#server-dot').style.background = 'var(--bad)';
       console.error(e);
     }
+  }
+
+  async function loadDownloads() {
+    try {
+      state.downloads = await api('/downloads');
+    } catch (e) { state.downloads = { items: [], summary: null }; }
+  }
+
+  async function loadBackupHistory() {
+    try {
+      const res = await api('/backups?limit=50');
+      state.backupHistory = res.history || [];
+    } catch (e) { state.backupHistory = []; }
+  }
+
+  async function loadAchievements() {
+    try { state.achievements = await api('/achievements'); }
+    catch (e) { state.achievements = null; }
+  }
+
+  async function loadMods() {
+    try { state.mods = await api('/mods'); }
+    catch (e) { state.mods = null; }
   }
 
   function renderAll() {
@@ -469,19 +776,21 @@
     renderStorage();
   }
 
+  function updateNotificationsDot() {
+    const dot = $('#notif-dot');
+    if (!dot) return;
+    const latest = state.notifications.latest_ts || 0;
+    const unseen = latest > state.seenActivityTs;
+    dot.hidden = !unseen;
+  }
+
   // ---------- event wiring ----------
   function wire() {
     $$('.nav-item').forEach(item => {
       item.addEventListener('click', e => {
         e.preventDefault();
-        $$('.nav-item').forEach(n => n.classList.remove('active'));
-        item.classList.add('active');
         const view = item.dataset.view;
-        if (view === 'installed') state.filter = 'installed';
-        else if (view === 'favorites') state.filter = 'favorites';
-        else state.filter = 'all';
-        $$('[data-filter]').forEach(c => c.classList.toggle('chip-active', c.dataset.filter === state.filter));
-        renderAllGames();
+        if (view) setView(view);
       });
     });
 
@@ -489,6 +798,9 @@
       b.addEventListener('click', () => {
         $$('.toggle-btn').forEach(x => x.classList.remove('active'));
         b.classList.add('active');
+        const mode = b.dataset.viewMode;
+        const grid = $('#all-grid');
+        if (grid) grid.classList.toggle('grid-list', mode === 'list');
       });
     });
 
@@ -538,7 +850,7 @@
           if (g) g.favorite = !isFav;
           renderRecent();
           renderAllGames();
-          state.stats.favorites += isFav ? -1 : 1;
+          if (state.stats) state.stats.favorites += isFav ? -1 : 1;
           renderStats();
         } catch (err) { toast('Could not toggle favorite', 'bad'); }
         return;
@@ -567,23 +879,132 @@
           const res = await api('/backups/run', { method: 'POST', body: { game } });
           toast(res.ok ? `Backed up ${game}` : `No save path found for ${game}`, res.ok ? 'good' : 'warn');
           await refreshLightweight();
+          if (state.view === 'backups') { await loadBackupHistory(); renderBackupsView(); }
         } catch (err) { toast('Backup failed', 'bad'); }
         backupBtn.disabled = false;
+        return;
+      }
+
+      const dlBtn = e.target.closest('[data-download]');
+      if (dlBtn) {
+        e.stopPropagation();
+        const gid = dlBtn.dataset.download;
+        dlBtn.disabled = true;
+        try {
+          await api('/downloads', { method: 'POST', body: { game_id: gid } });
+          toast('Download queued', 'good');
+          if (state.view === 'downloads') { await loadDownloads(); renderDownloads(); }
+        } catch (err) { toast('Could not queue download', 'bad'); }
+        dlBtn.disabled = false;
+        return;
+      }
+
+      const dlPause = e.target.closest('[data-dl-pause]');
+      if (dlPause) {
+        try { await api(`/downloads/${encodeURIComponent(dlPause.dataset.dlPause)}/pause`, { method: 'POST', body: {} }); await loadDownloads(); renderDownloads(); }
+        catch (err) { toast('Pause failed', 'bad'); }
+        return;
+      }
+      const dlResume = e.target.closest('[data-dl-resume]');
+      if (dlResume) {
+        try { await api(`/downloads/${encodeURIComponent(dlResume.dataset.dlResume)}/resume`, { method: 'POST', body: {} }); await loadDownloads(); renderDownloads(); }
+        catch (err) { toast('Resume failed', 'bad'); }
+        return;
+      }
+      const dlCancel = e.target.closest('[data-dl-cancel]');
+      if (dlCancel) {
+        try { await api(`/downloads/${encodeURIComponent(dlCancel.dataset.dlCancel)}`, { method: 'DELETE' }); await loadDownloads(); renderDownloads(); }
+        catch (err) { toast('Cancel failed', 'bad'); }
+        return;
+      }
+
+      const modExpand = e.target.closest('[data-mod-expand]');
+      if (modExpand) {
+        const gid = modExpand.dataset.modExpand;
+        const itemsEl = document.querySelector(`[data-mod-items="${gid}"]`);
+        if (!itemsEl) return;
+        if (!itemsEl.hidden) {
+          itemsEl.hidden = true;
+          modExpand.textContent = 'Manage';
+          return;
+        }
+        modExpand.textContent = 'Loading...';
+        try {
+          const info = await api(`/mods/${encodeURIComponent(gid)}`);
+          itemsEl.innerHTML = (info.mods || []).map(m => `
+            <div class="mod-item ${m.enabled ? '' : 'disabled'}">
+              <div>
+                <div class="mod-item-name">${escapeHTML(m.name)}</div>
+                <div class="mod-item-sub">${escapeHTML(m.kind)} · ${fmtBytes(m.size_bytes)} · ${fmtRelative(m.modified_ts)}</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" ${m.enabled ? 'checked' : ''} data-mod-toggle="${escapeHTML(gid)}" data-mod-id="${escapeHTML(m.id)}" />
+                <span class="switch-track"></span>
+              </label>
+            </div>`).join('') || '<div class="empty-state">No mods inside this game\'s mod folder.</div>';
+          itemsEl.hidden = false;
+          modExpand.textContent = 'Collapse';
+        } catch (err) {
+          toast('Could not load mods', 'bad');
+          modExpand.textContent = 'Manage';
+        }
+        return;
+      }
+
+      const ach = e.target.closest('.ach-item');
+      if (ach) {
+        const row = e.target.closest('[data-ach-game]');
+        if (!row) return;
+        const gid = row.dataset.achGame;
+        const aitems = $$('.ach-item', row);
+        const idx = aitems.indexOf(ach);
+        if (idx < 0) return;
+        const data = state.achievements.games.find(g => g.game_id === gid);
+        if (!data) return;
+        const item = data.items[idx];
+        try {
+          const path = item.unlocked ? 'lock' : 'unlock';
+          await api(`/achievements/${encodeURIComponent(gid)}/${path}`, { method: 'POST', body: { achievement_id: item.id, name: item.name, description: item.description, points: item.points } });
+          await loadAchievements();
+          renderAchievementsView();
+        } catch (err) { toast('Could not toggle achievement', 'bad'); }
+      }
+    });
+
+    document.addEventListener('change', async e => {
+      const modToggle = e.target.closest('[data-mod-toggle]');
+      if (modToggle) {
+        const gid = modToggle.dataset.modToggle;
+        const mid = modToggle.dataset.modId;
+        const enabled = modToggle.checked;
+        try {
+          const res = await api(`/mods/${encodeURIComponent(gid)}/toggle`, { method: 'POST', body: { mod_id: mid, enabled } });
+          if (!res.ok) {
+            toast(res.reason || 'Toggle failed', 'bad');
+            modToggle.checked = !enabled;
+            return;
+          }
+          toast(`Mod ${enabled ? 'enabled' : 'disabled'}`, 'good');
+          await loadMods();
+        } catch (err) {
+          toast('Toggle failed', 'bad');
+          modToggle.checked = !enabled;
+        }
       }
     });
 
     const runBackup = $('#run-backup-btn');
-    if (runBackup) runBackup.addEventListener('click', async () => {
-      const orig = runBackup.innerHTML;
-      runBackup.innerHTML = `<svg viewBox="0 0 24 24" fill="none" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Running...`;
-      runBackup.disabled = true;
+    if (runBackup) runBackup.addEventListener('click', () => runAllBackups(runBackup));
+    const runAll = $('#backups-run-all');
+    if (runAll) runAll.addEventListener('click', () => runAllBackups(runAll));
+
+    const clearDl = $('#downloads-clear-btn');
+    if (clearDl) clearDl.addEventListener('click', async () => {
       try {
-        const res = await api('/backups/run', { method: 'POST', body: {} });
-        toast(`Backup ran: ${res.ok}/${res.ran} games in ${res.duration_ms}ms`, res.ok ? 'good' : 'warn');
-        await refreshLightweight();
-      } catch (e) { toast('Backup failed', 'bad'); }
-      runBackup.disabled = false;
-      runBackup.innerHTML = orig;
+        const res = await api('/downloads/clear', { method: 'POST', body: {} });
+        toast(`Cleared ${res.removed} completed`, 'good');
+        await loadDownloads(); renderDownloads();
+      } catch (e) { toast('Clear failed', 'bad'); }
     });
 
     const refreshBtn = $('#refresh-launchers');
@@ -599,6 +1020,15 @@
 
     const heroSync = $('#hero-sync-btn');
     if (heroSync) heroSync.addEventListener('click', () => $('#refresh-launchers').click());
+
+    const settingsSave = $('#settings-save');
+    if (settingsSave) settingsSave.addEventListener('click', saveSettings);
+
+    const notifBtn = document.querySelector('.icon-btn .dot-badge')?.closest('.icon-btn');
+    if (notifBtn) notifBtn.addEventListener('click', () => {
+      state.seenActivityTs = state.notifications.latest_ts || Math.floor(Date.now() / 1000);
+      updateNotificationsDot();
+    });
 
     document.addEventListener('keydown', e => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -623,23 +1053,60 @@
     }
   }
 
+  async function runAllBackups(btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Running...`;
+    btn.disabled = true;
+    try {
+      const res = await api('/backups/run', { method: 'POST', body: {} });
+      toast(`Backup ran: ${res.ok}/${res.ran} games in ${res.duration_ms}ms`, res.ok ? 'good' : 'warn');
+      await refreshLightweight();
+      if (state.view === 'backups') { await loadBackupHistory(); renderBackupsView(); }
+    } catch (e) { toast('Backup failed', 'bad'); }
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+
+  async function saveSettings() {
+    const payload = {};
+    $$('[data-setting]').forEach(el => {
+      const key = el.dataset.setting;
+      if (el.type === 'checkbox') payload[key] = el.checked;
+      else if (el.type === 'number') payload[key] = Number(el.value) || 0;
+      else payload[key] = el.value;
+    });
+    const status = $('#settings-status');
+    try {
+      const res = await api('/settings', { method: 'POST', body: payload });
+      state.settings = res;
+      if (status) { status.textContent = 'Saved'; status.className = 'settings-status ok'; }
+      toast('Settings saved', 'good');
+    } catch (e) {
+      if (status) { status.textContent = 'Save failed'; status.className = 'settings-status err'; }
+      toast('Could not save settings', 'bad');
+    }
+  }
+
   async function refreshLightweight() {
     try {
-      const [stats, backupStatus, activity, storage] = await Promise.all([
-        api('/stats'), api('/backups/status'), api('/activity'), api('/storage'),
+      const [stats, backupStatus, activity, storage, notif] = await Promise.all([
+        api('/stats'), api('/backups/status'), api('/activity'), api('/storage'), api('/notifications'),
       ]);
       state.stats = stats;
       state.backupStatus = backupStatus;
       state.activity = activity.items;
       state.storage = storage;
+      state.notifications = notif;
+      updateNotificationsDot();
       renderStats(); renderBackup(); renderActivity(); renderStorage();
+      if (state.view === 'downloads') { await loadDownloads(); renderDownloads(); }
     } catch (e) { /* ignore */ }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     wire();
     loadAll();
-    setInterval(refreshLightweight, 30_000);
+    setInterval(refreshLightweight, 15_000);
   });
 
   // Inject keyframes used inline
