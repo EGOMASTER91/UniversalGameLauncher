@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameHub Launcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+  </div>
+
+  <!-- Custom window title bar -->
+  <div class="titlebar">
+    <div class="titlebar-left">
+      <div class="window-controls">
+        <span class="control control-close"></span>
+        <span class="control control-min"></span>
+        <span class="control control-max"></span>
+      </div>
+      <div class="titlebar-title">GameHub Launcher</div>
+    </div>
+    <div class="titlebar-right">
+      <span class="titlebar-status">
+        <span class="status-dot"></span>
+        Online · 247ms
+      </span>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar-left">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#8B5CF6"/>
+                <stop offset="1" stop-color="#3B82F6"/>
+              </linearGradient>
+            </defs>
+            <path d="M6 10C6 7.79 7.79 6 10 6h12c2.21 0 4 1.79 4 4v12c0 2.21-1.79 4-4 4H10c-2.21 0-4-1.79-4-4V10z" fill="url(#logoGrad)"/>
+            <circle cx="12" cy="16" r="2" fill="#fff"/>
+            <circle cx="20" cy="16" r="2" fill="#fff"/>
+            <path d="M11 20h10" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">GameHub</div>
+          <div class="brand-sub">Launcher · v2.4.1</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-section-label">Menu</div>
+        <a class="nav-item active" data-tooltip="Home">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-8.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          <span>Home</span>
+          <span class="nav-pill">New</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.7"/><path d="M4 9h16M9 5v14" stroke="currentColor" stroke-width="1.7"/></svg>
+          <span>Library</span>
+          <span class="nav-count">247</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.8H20l-5 3.7 1.9 6L12 15l-4.9 3.5L9 12.5 4 8.8h6.2L12 3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          <span>Installed</span>
+          <span class="nav-count">38</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          <span>Favorites</span>
+          <span class="nav-count">14</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <span>Recent</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Downloads</span>
+          <span class="nav-pill nav-pill-active">3</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M4 7h16v12H4z" stroke="currentColor" stroke-width="1.7"/><path d="M8 7V5h8v2" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="13" r="3" stroke="currentColor" stroke-width="1.7"/></svg>
+          <span>Save Backups</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M8 21h8M12 17v4M5 4h14l-1 11a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3L5 4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          <span>Achievements</span>
+          <span class="nav-count">1.2k</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <span>Mods</span>
+        </a>
+        <a class="nav-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="launchers">
+        <div class="nav-section-label">
+          <span>Launcher Integrations</span>
+          <span class="section-label-action">Sync</span>
+        </div>
+        <div class="launcher-item" data-launcher="steam">
+          <div class="launcher-ic launcher-steam">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.5 3 8.3 7.1 9.5l1.3-2c-.6-.2-1.2-.4-1.7-.7-.5-.4-.7-.9-.7-1.4 0-.3.1-.5.2-.8L8 16.4c.2.5.6 1 1.1 1.3.5.3 1.1.5 1.7.5 1 0 1.8-.3 2.5-1 .6-.7 1-1.5 1-2.5 0-.5-.1-1-.3-1.5l4.5-3.2c.4-.3.7-.6.9-1.1.2-.4.3-.9.3-1.4 0-1-.4-1.9-1.1-2.6S17 4 16 4c-1 0-1.9.3-2.5 1-.7.7-1 1.5-1 2.5L9 10c-.4-.1-.7-.2-1.1-.2-.5 0-1 .1-1.5.4l-2.6-1.3C4.6 5.3 8 2.5 12 2zm0 17.5l-2.5-1.1-.6 1c.9.3 2 .5 3.1.5 4.5 0 8.3-3 9.5-7.1l-1.9-.7c-1 3-3.8 5.4-7.5 5.4-.6 0-1.1-.1-1.7-.2l1.6.2zM16 6c.6 0 1 .2 1.4.6.4.4.6.9.6 1.4s-.2 1-.6 1.4c-.4.4-.9.6-1.4.6s-1-.2-1.4-.6c-.4-.4-.6-.9-.6-1.4s.2-1 .6-1.4c.4-.4.8-.6 1.4-.6z"/></svg>
+          </div>
+          <div class="launcher-meta">
+            <div class="launcher-name">Steam</div>
+            <div class="launcher-count">192 games</div>
+          </div>
+          <span class="launcher-status online"></span>
+        </div>
+        <div class="launcher-item" data-launcher="epic">
+          <div class="launcher-ic launcher-epic">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16v14l-2 2h-3l-1 2h-4l-1-2H6l-2-2V3zm2 2v10l1 1h10l1-1V5H6z"/></svg>
+          </div>
+          <div class="launcher-meta">
+            <div class="launcher-name">Epic Games</div>
+            <div class="launcher-count">47 games</div>
+          </div>
+          <span class="launcher-status online"></span>
+        </div>
+        <div class="launcher-item" data-launcher="gog">
+          <div class="launcher-ic launcher-gog">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="#1A1A1F"/></svg>
+          </div>
+          <div class="launcher-meta">
+            <div class="launcher-name">GOG Galaxy</div>
+            <div class="launcher-count">63 games</div>
+          </div>
+          <span class="launcher-status online"></span>
+        </div>
+        <div class="launcher-item" data-launcher="ubi">
+          <div class="launcher-ic launcher-ubi">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10c0-1.4-.3-2.7-.8-4l-1.8.9c.4 1 .6 2 .6 3.1a8 8 0 1 1-8-8c1.1 0 2.1.2 3.1.6L16 2.8C14.7 2.3 13.4 2 12 2zm-1 5v10h2V7h-2z"/></svg>
+          </div>
+          <div class="launcher-meta">
+            <div class="launcher-name">Ubisoft Connect</div>
+            <div class="launcher-count">18 games</div>
+          </div>
+          <span class="launcher-status online"></span>
+        </div>
+        <div class="launcher-item" data-launcher="ea">
+          <div class="launcher-ic launcher-ea">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6l3 12h2.5L6 6H3zm6 0L7 18h9l1-2H10l.7-3H17l1-2h-7l.6-3H19l1-2H9z"/></svg>
+          </div>
+          <div class="launcher-meta">
+            <div class="launcher-name">EA App</div>
+            <div class="launcher-count">22 games</div>
+          </div>
+          <span class="launcher-status online"></span>
+        </div>
+        <div class="launcher-item" data-launcher="bnet">
+          <div class="launcher-ic launcher-bnet">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 5 3.5 9.3 8 10 4.5-.7 8-5 8-10V6l-8-4zm0 5l5 2.5v3c0 3.5-2.3 6.5-5 7-2.7-.5-5-3.5-5-7v-3L12 7z"/></svg>
+          </div>
+          <div class="launcher-meta">
+            <div class="launcher-name">Battle.net</div>
+            <div class="launcher-count">9 games</div>
+          </div>
+          <span class="launcher-status offline"></span>
+        </div>
+        <div class="launcher-item" data-launcher="xbox">
+          <div class="launcher-ic launcher-xbox">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M7 7c2 1 3.5 2.5 5 4.5 1.5-2 3-3.5 5-4.5M7 17c2-1 3.5-2.5 5-4.5 1.5 2 3 3.5 5 4.5" stroke="#1A1A1F" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="launcher-meta">
+            <div class="launcher-name">Xbox App</div>
+            <div class="launcher-count">31 games</div>
+          </div>
+          <span class="launcher-status online"></span>
+        </div>
+        <div class="launcher-item" data-launcher="riot">
+          <div class="launcher-ic launcher-riot">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 4l3 14h12l3-14-5 4-4-6-4 6-5-4zm3 16h12v2H6v-2z"/></svg>
+          </div>
+          <div class="launcher-meta">
+            <div class="launcher-name">Riot Client</div>
+            <div class="launcher-count">4 games</div>
+          </div>
+          <span class="launcher-status online"></span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="storage-mini">
+          <div class="storage-label">
+            <span>Local Storage</span>
+            <span class="storage-value">1.8 / 4 TB</span>
+          </div>
+          <div class="storage-bar"><div class="storage-fill" style="width: 45%"></div></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER CONTENT -->
+    <main class="content">
+      <!-- Top Bar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn" title="Back">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="icon-btn" title="Forward">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="search">
+            <svg class="search-ic" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <input type="text" placeholder="Search for games, mods, achievements..." />
+            <span class="search-kbd">⌘K</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="view-toggle">
+            <button class="toggle-btn active" title="Grid view">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/></svg>
+            </button>
+            <button class="toggle-btn" title="List view">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <button class="icon-btn filter-btn" title="Filter">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16l-6 8v6l-4-2v-4L4 5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+            <span class="filter-badge">2</span>
+          </button>
+          <button class="icon-btn" title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9zM10 21a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="dot-badge"></span>
+          </button>
+          <div class="profile">
+            <div class="profile-avatar">
+              <span>AK</span>
+              <span class="profile-status"></span>
+            </div>
+            <div class="profile-meta">
+              <div class="profile-name">Alex Kovac</div>
+              <div class="profile-handle">Lv 87 · Online</div>
+            </div>
+            <svg class="profile-caret" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-scroll">
+        <!-- HERO SECTION -->
+        <section class="hero">
+          <div class="hero-bg">
+            <div class="hero-bg-overlay"></div>
+            <div class="hero-bg-noise"></div>
+            <img class="hero-art" alt="Cyberpunk 2077" src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1091500/library_hero.jpg" onerror="this.style.display='none'"/>
+          </div>
+          <div class="hero-content">
+            <div class="hero-info">
+              <div class="hero-launcher-tag">
+                <span class="hero-launcher-dot"></span>
+                Steam · Continue Playing
+              </div>
+              <h1 class="hero-title">Cyberpunk 2077</h1>
+              <div class="hero-subtitle">Phantom Liberty · Update 2.21</div>
+              <div class="hero-stats">
+                <div class="hero-stat">
+                  <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                  <span>147h played</span>
+                </div>
+                <div class="hero-stat">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l5-9 4 6 3-4 6 11H3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                  <span>Last played 2h ago</span>
+                </div>
+                <div class="hero-stat hero-stat-good">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span>Save backed up · 12 min ago</span>
+                </div>
+              </div>
+              <div class="hero-actions">
+                <button class="btn btn-primary">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg>
+                  <span>Play</span>
+                  <span class="btn-sub">Resume Act II · The Heist</span>
+                </button>
+                <button class="btn btn-secondary">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  <span>New Game</span>
+                </button>
+                <button class="btn btn-ghost">
+                  <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="hero-side">
+              <div class="hero-rating">
+                <div class="hero-rating-label">Metacritic</div>
+                <div class="hero-rating-score">86</div>
+              </div>
+              <div class="hero-tags">
+                <span class="tag">RPG</span>
+                <span class="tag">Open World</span>
+                <span class="tag">Cyberpunk</span>
+                <span class="tag">Story Rich</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RECENTLY PLAYED -->
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Recently Played</h2>
+              <p class="section-sub">Pick up where you left off</p>
+            </div>
+            <div class="section-actions">
+              <button class="chip chip-active">All</button>
+              <button class="chip">This Week</button>
+              <button class="chip">This Month</button>
+              <button class="link-btn">View all <span>›</span></button>
+            </div>
+          </div>
+          <div class="carousel">
+            <!-- Card 1 -->
+            <article class="card card-tall">
+              <div class="card-art" style="background-image: linear-gradient(135deg,#0e1f3e,#2a0e3e);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1091500/library_600x900.jpg" alt="Cyberpunk 2077" onerror="this.style.display='none'"/>
+                <div class="card-overlay"></div>
+                <button class="card-fav active" title="Favorite">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+                </button>
+                <div class="card-launcher launcher-pill launcher-pill-steam">Steam</div>
+                <div class="card-play">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg>
+                </div>
+                <div class="card-progress"><div class="card-progress-fill" style="width: 76%"></div></div>
+              </div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <h3 class="card-title">Cyberpunk 2077</h3>
+                  <span class="card-status installed">●</span>
+                </div>
+                <div class="card-meta">
+                  <span>147h · Act II</span>
+                  <span class="card-meta-dot">·</span>
+                  <span>2h ago</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card card-tall">
+              <div class="card-art" style="background-image: linear-gradient(135deg,#3a1f0a,#1a0f00);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1245620/library_600x900.jpg" alt="Elden Ring" onerror="this.style.display='none'"/>
+                <div class="card-overlay"></div>
+                <button class="card-fav active" title="Favorite">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+                </button>
+                <div class="card-launcher launcher-pill launcher-pill-steam">Steam</div>
+                <div class="card-play">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg>
+                </div>
+                <div class="card-progress"><div class="card-progress-fill" style="width: 92%"></div></div>
+              </div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <h3 class="card-title">Elden Ring</h3>
+                  <span class="card-status installed">●</span>
+                </div>
+                <div class="card-meta">
+                  <span>89h · NG+</span>
+                  <span class="card-meta-dot">·</span>
+                  <span>Yesterday</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card card-tall">
+              <div class="card-art" style="background-image: linear-gradient(135deg,#2a1233,#0b0419);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1086940/library_600x900.jpg" alt="Baldur's Gate 3" onerror="this.style.display='none'"/>
+                <div class="card-overlay"></div>
+                <button class="card-fav" title="Favorite">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.7"/></svg>
+                </button>
+                <div class="card-launcher launcher-pill launcher-pill-gog">GOG</div>
+                <div class="card-play">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg>
+                </div>
+                <div class="card-progress"><div class="card-progress-fill" style="width: 42%"></div></div>
+              </div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <h3 class="card-title">Baldur's Gate 3</h3>
+                  <span class="card-status installed">●</span>
+                </div>
+                <div class="card-meta">
+                  <span>64h · Act II</span>
+                  <span class="card-meta-dot">·</span>
+                  <span>3d ago</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card card-tall">
+              <div class="card-art" style="background-image: linear-gradient(135deg,#2b0a0a,#0a0a0a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1174180/library_600x900.jpg" alt="Red Dead Redemption 2" onerror="this.style.display='none'"/>
+                <div class="card-overlay"></div>
+                <button class="card-fav" title="Favorite">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.7"/></svg>
+                </button>
+                <div class="card-launcher launcher-pill launcher-pill-epic">Epic</div>
+                <div class="card-play">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg>
+                </div>
+                <div class="card-progress"><div class="card-progress-fill" style="width: 100%"></div></div>
+              </div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <h3 class="card-title">Red Dead Redemption 2</h3>
+                  <span class="card-status installed">●</span>
+                </div>
+                <div class="card-meta">
+                  <span>112h · Epilogue</span>
+                  <span class="card-meta-dot">·</span>
+                  <span>5d ago</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card card-tall">
+              <div class="card-art" style="background-image: linear-gradient(135deg,#0f3a1a,#02100a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1551360/library_600x900.jpg" alt="Forza Horizon 5" onerror="this.style.display='none'"/>
+                <div class="card-overlay"></div>
+                <button class="card-fav active" title="Favorite">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>
+                </button>
+                <div class="card-launcher launcher-pill launcher-pill-xbox">Xbox</div>
+                <div class="card-play">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg>
+                </div>
+                <div class="card-progress"><div class="card-progress-fill" style="width: 58%"></div></div>
+              </div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <h3 class="card-title">Forza Horizon 5</h3>
+                  <span class="card-status installed">●</span>
+                </div>
+                <div class="card-meta">
+                  <span>58h · S4</span>
+                  <span class="card-meta-dot">·</span>
+                  <span>1w ago</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card card-tall">
+              <div class="card-art" style="background-image: linear-gradient(135deg,#1a1a3d,#000010);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/2050650/library_600x900.jpg" alt="Resident Evil 4" onerror="this.style.display='none'"/>
+                <div class="card-overlay"></div>
+                <button class="card-fav" title="Favorite">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.7"/></svg>
+                </button>
+                <div class="card-launcher launcher-pill launcher-pill-steam">Steam</div>
+                <div class="card-play">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7L7 5z"/></svg>
+                </div>
+                <div class="card-progress"><div class="card-progress-fill" style="width: 23%"></div></div>
+              </div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <h3 class="card-title">Resident Evil 4</h3>
+                  <span class="card-status installed">●</span>
+                </div>
+                <div class="card-meta">
+                  <span>14h · Ch. 6</span>
+                  <span class="card-meta-dot">·</span>
+                  <span>2w ago</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ALL GAMES -->
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">All Games</h2>
+              <p class="section-sub">247 games across 8 launchers</p>
+            </div>
+            <div class="section-actions">
+              <button class="chip chip-active">All</button>
+              <button class="chip">Installed</button>
+              <button class="chip">Favorites</button>
+              <button class="chip">Recently Added</button>
+              <select class="select">
+                <option>Sort: Last Played</option>
+                <option>Name (A-Z)</option>
+                <option>Playtime</option>
+                <option>Install Date</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid">
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#0a1a3a,#1a0a3a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/292030/library_600x900.jpg" alt="The Witcher 3" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-gog">GOG</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">The Witcher 3: Wild Hunt</div>
+                <div class="card-sm-meta">RPG · 230h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#3a2a0a,#1a0a00);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/489830/library_600x900.jpg" alt="Skyrim" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-steam">Steam</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Skyrim Special Edition</div>
+                <div class="card-sm-meta">RPG · 412h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#3a0a1a,#0a0a1a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1888160/library_600x900.jpg" alt="God of War" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-epic">Epic</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">God of War Ragnarök</div>
+                <div class="card-sm-meta">Action · 38h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#2a1a0a,#1a0a00);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1716740/library_600x900.jpg" alt="Starfield" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-xbox">Xbox</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Starfield</div>
+                <div class="card-sm-meta">RPG · 67h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#1a3a0a,#0a1a00);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1145360/library_600x900.jpg" alt="Hades" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-steam">Steam</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Hades</div>
+                <div class="card-sm-meta">Roguelike · 84h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#3a0a3a,#1a001a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/367520/library_600x900.jpg" alt="Hollow Knight" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-gog">GOG</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Hollow Knight</div>
+                <div class="card-sm-meta">Metroidvania · 72h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#0a3a3a,#001a1a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1593500/library_600x900.jpg" alt="Sekiro" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-steam">Steam</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">God of War</div>
+                <div class="card-sm-meta">Action · 41h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#3a2a3a,#1a0a1a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/814380/library_600x900.jpg" alt="Sekiro" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-steam">Steam</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Sekiro: Shadows Die Twice</div>
+                <div class="card-sm-meta">Action · 56h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#0a1a3a,#000a1a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/271590/library_600x900.jpg" alt="GTA V" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-epic">Epic</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Grand Theft Auto V</div>
+                <div class="card-sm-meta">Open World · 320h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#3a1a0a,#1a0a00);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/812140/library_600x900.jpg" alt="AC Odyssey" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-ubi">Ubisoft</span>
+                <span class="card-sm-installed">○</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">AC Odyssey</div>
+                <div class="card-sm-meta">Action RPG · Not installed</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#0a3a1a,#00120a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1593500/library_600x900.jpg" alt="It Takes Two" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-ea">EA</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">It Takes Two</div>
+                <div class="card-sm-meta">Co-op · 18h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#1a0a3a,#0a0010);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/990080/library_600x900.jpg" alt="Hogwarts Legacy" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-steam">Steam</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Hogwarts Legacy</div>
+                <div class="card-sm-meta">RPG · 92h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#3a3a0a,#1a1a00);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1817070/library_600x900.jpg" alt="Spider-Man" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-steam">Steam</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Marvel's Spider-Man 2</div>
+                <div class="card-sm-meta">Action · 28h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#0a0a1a,#000005);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1517290/library_600x900.jpg" alt="Battlefield 2042" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-ea">EA</span>
+                <span class="card-sm-installed">○</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Battlefield 2042</div>
+                <div class="card-sm-meta">FPS · Cloud</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#3a0a0a,#1a0000);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1517290/library_600x900.jpg" alt="Diablo IV" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-bnet">Battle.net</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Diablo IV</div>
+                <div class="card-sm-meta">ARPG · 76h</div>
+              </div>
+            </article>
+            <article class="card-sm">
+              <div class="card-sm-art" style="background:linear-gradient(135deg,#1a3a3a,#000a1a);">
+                <img src="https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/1238840/library_600x900.jpg" alt="Valorant" onerror="this.style.display='none'"/>
+                <span class="card-sm-launcher launcher-pill-riot">Riot</span>
+                <span class="card-sm-installed">●</span>
+              </div>
+              <div class="card-sm-info">
+                <div class="card-sm-title">Valorant</div>
+                <div class="card-sm-meta">FPS · 240h</div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="sidebar-right">
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">Activity</h3>
+          <button class="panel-action">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <div class="activity">
+          <div class="activity-item">
+            <div class="activity-ic activity-ic-launch">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M7 5v14l12-7L7 5z" fill="currentColor"/></svg>
+            </div>
+            <div class="activity-body">
+              <div class="activity-title">Launched <b>Cyberpunk 2077</b></div>
+              <div class="activity-time">2h ago · 4h 12m session</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-ic activity-ic-backup">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div class="activity-body">
+              <div class="activity-title">Backup completed <b>Elden Ring</b></div>
+              <div class="activity-time">12 min ago · 2.4 GB synced</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-ic activity-ic-friend">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div class="activity-body">
+              <div class="activity-title"><b>Jade.M</b> started playing</div>
+              <div class="activity-time">Baldur's Gate 3 · 18m ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-ic activity-ic-achievement">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M8 21h8M12 17v4M5 4h14l-1 11a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3L5 4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="activity-body">
+              <div class="activity-title">Achievement <b>Master of Night City</b></div>
+              <div class="activity-time">Cyberpunk 2077 · 2h ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-ic activity-ic-friend">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div class="activity-body">
+              <div class="activity-title"><b>Niko_R</b> invited to Valorant</div>
+              <div class="activity-time">Just now</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">Statistics</h3>
+          <span class="panel-sub">This week</span>
+        </div>
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-value">247</div>
+            <div class="stat-label">Total Games</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">38</div>
+            <div class="stat-label">Installed</div>
+          </div>
+          <div class="stat stat-wide">
+            <div class="stat-value">1,247h</div>
+            <div class="stat-label">Total Playtime</div>
+            <div class="stat-trend stat-trend-up">▲ 12h vs last week</div>
+          </div>
+        </div>
+        <div class="chart">
+          <div class="chart-head">
+            <span class="chart-label">Weekly Playtime</span>
+            <span class="chart-total">22h 14m</span>
+          </div>
+          <div class="chart-bars">
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:42%"></div><span>M</span></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:68%"></div><span>T</span></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:30%"></div><span>W</span></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:82%"></div><span>T</span></div>
+            <div class="chart-bar-wrap"><div class="chart-bar chart-bar-active" style="height:95%"></div><span>F</span></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:60%"></div><span>S</span></div>
+            <div class="chart-bar-wrap"><div class="chart-bar" style="height:50%"></div><span>S</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-backup">
+        <div class="panel-head">
+          <h3 class="panel-title">Save Backup</h3>
+          <span class="badge badge-good">Healthy</span>
+        </div>
+        <div class="backup-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg">
+            <defs>
+              <linearGradient id="ringGrad" x1="0" y1="0" x2="120" y2="120">
+                <stop offset="0" stop-color="#8B5CF6"/>
+                <stop offset="1" stop-color="#3B82F6"/>
+              </linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r="50" stroke="rgba(255,255,255,0.06)" stroke-width="10" fill="none"/>
+            <circle cx="60" cy="60" r="50" stroke="url(#ringGrad)" stroke-width="10" fill="none"
+                    stroke-dasharray="314" stroke-dashoffset="38" stroke-linecap="round"
+                    transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="ring-text">
+            <div class="ring-value">88%</div>
+            <div class="ring-label">backed up</div>
+          </div>
+        </div>
+        <div class="backup-meta">
+          <div class="backup-row">
+            <span class="backup-key">Last backup</span>
+            <span class="backup-val">12 min ago</span>
+          </div>
+          <div class="backup-row">
+            <span class="backup-key">Saves protected</span>
+            <span class="backup-val">216 / 247</span>
+          </div>
+          <div class="backup-row">
+            <span class="backup-key">Cloud size</span>
+            <span class="backup-val">142.6 GB</span>
+          </div>
+        </div>
+        <button class="btn btn-backup">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Run Backup Now
+        </button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">Storage</h3>
+          <span class="panel-sub">SSD · NVMe</span>
+        </div>
+        <div class="storage-graph">
+          <div class="storage-meta">
+            <div>
+              <div class="storage-used">1.8<span>TB</span></div>
+              <div class="storage-total">of 4 TB used</div>
+            </div>
+            <div class="cloud-sync">
+              <span class="cloud-dot"></span>
+              Cloud synced
+            </div>
+          </div>
+          <div class="storage-bar-lg">
+            <div class="storage-seg" style="width:32%; background:linear-gradient(90deg,#8B5CF6,#A78BFA);" title="Games"></div>
+            <div class="storage-seg" style="width:8%; background:linear-gradient(90deg,#3B82F6,#60A5FA);" title="Saves"></div>
+            <div class="storage-seg" style="width:5%; background:linear-gradient(90deg,#06B6D4,#22D3EE);" title="Mods"></div>
+          </div>
+          <div class="storage-legend">
+            <span><i style="background:#8B5CF6"></i>Games · 1.28 TB</span>
+            <span><i style="background:#3B82F6"></i>Saves · 320 GB</span>
+            <span><i style="background:#06B6D4"></i>Mods · 200 GB</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
